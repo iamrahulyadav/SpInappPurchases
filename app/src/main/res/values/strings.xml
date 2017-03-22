@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">SP InApp Purchases</string>
+
+
+    <string-array name="gameNames">
+        <item>Game 1</item>
+        <item>Game 2</item>
+        <item>Game 3</item>
+        <item>Game 4</item>
+        <item>Game 5</item>
+    </string-array>
+
+    <string-array name="gameId">
+        <item>sp100</item>
+        <item>sp101</item>
+        <item>sp102</item>
+        <item>sp103</item>
+        <item>sp104</item>
+        <item>sp105</item>
+    </string-array>
+
+</resources>
