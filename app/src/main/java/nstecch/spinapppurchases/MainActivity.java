@@ -15,6 +15,11 @@ import nstecch.spinapppurchases.model.GameModel;
 public class MainActivity extends AppCompatActivity implements OnGameCLicked{
 
     private static final String TAG = "MainActivity";
+
+//    IN APP PURCHASES
+//    http://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play
+//    http://stackoverflow.com/questions/10792465/how-to-implement-in-app-purchase-in-my-android-application
+//    http://www.techotopia.com/index.php/An_Android_Studio_Google_Play_In-app_Billing_Tutorial
     
     List<GameModel> gameModelList = new ArrayList<>();
     RecyclerView recyclerViewGame;

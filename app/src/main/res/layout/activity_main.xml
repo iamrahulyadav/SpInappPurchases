@@ -7,7 +7,6 @@
     tools:context="nstecch.spinapppurchases.MainActivity"
     android:id="@+id/rootLayout"
     >
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewGame"
         android:layout_width="match_parent"
