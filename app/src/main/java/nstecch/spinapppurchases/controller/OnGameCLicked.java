@@ -5,6 +5,6 @@ package nstecch.spinapppurchases.controller;
  */
 
 public interface OnGameCLicked {
-    void onBuyClick(String gameName,String price);
-    void onSuscribeClick(String gameName,String price);
+    void onBuyClick(String gameName,String price,String gameId);
+    void onSuscribeClick(String gameName,String price,String gameId);
 }

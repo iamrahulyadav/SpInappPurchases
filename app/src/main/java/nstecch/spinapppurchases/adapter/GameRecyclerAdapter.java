@@ -54,13 +54,13 @@ public class GameRecyclerAdapter extends RecyclerView.Adapter<GameRecyclerAdapte
         holder.buttonBuyNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onGameCLicked.onBuyClick(gameModel.gameTitle,gameModel.getGamePrice());
+                onGameCLicked.onBuyClick(gameModel.gameTitle,gameModel.getGamePrice(),gameModel.getGameId());
             }
         });
         holder.buttonSubscribeNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onGameCLicked.onSuscribeClick(gameModel.gameTitle,gameModel.getGamePrice());
+                onGameCLicked.onSuscribeClick(gameModel.gameTitle,gameModel.getGamePrice(),gameModel.getGameId());
             }
         });
     }
