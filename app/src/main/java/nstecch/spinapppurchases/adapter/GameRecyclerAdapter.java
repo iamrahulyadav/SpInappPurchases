@@ -50,7 +50,7 @@ public class GameRecyclerAdapter extends RecyclerView.Adapter<GameRecyclerAdapte
         final GameModel gameModel = listGames.get(position);
         holder.textViewGameTitle.setText(gameModel.getTitle());
         holder.textViewGamePrice.setText(gameModel.getPrice());
-        holder.imageViewGame.setImageResource(images[position]);
+        holder.imageViewGame.setImageResource(images[position%4]);
         holder.buttonBuyNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -2,14 +2,18 @@ package nstecch.spinapppurchases;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 import nstecch.spinapppurchases.adapter.GameRecyclerAdapter;
 import nstecch.spinapppurchases.controller.OnGameCLicked;
@@ -47,12 +51,21 @@ public class MainActivity extends AppCompatActivity implements OnGameCLicked, Bi
     private final int RC_REQUEST_SKU = 1001;
     private final int RC_REQUEST_SUBSCRIPTION = 1001;
 
+//    GET THE SUBSCRIPTION DETAILS
+//    https://developers.google.com/android-publisher/api-ref/purchases/subscriptions/get
+// RESPONSE IS HERE
+//    https://developers.google.com/android-publisher/api-ref/purchases/subscriptions#resource
+
+
 //    IN APP PURCHASES
+//    https://developer.android.com/google/play/billing/billing_subscriptions.html#administering
+//    https://github.com/anjlab/android-inapp-billing-v3
 //    http://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play
 //    http://stackoverflow.com/questions/10792465/how-to-implement-in-app-purchase-in-my-android-application
 //    http://www.techotopia.com/index.php/An_Android_Studio_Google_Play_In-app_Billing_Tutorial
     List<GameModel> gameModelList = new ArrayList<>();
     RecyclerView recyclerViewGame;
+    ProgressBar progressLoadMOre;
     GameRecyclerAdapter gameRecyclerAdapter;
 
     // payment gatewaye
@@ -82,15 +95,49 @@ public class MainActivity extends AppCompatActivity implements OnGameCLicked, Bi
         setUpInAPpPurchases(getResources().getString(R.string.base_key));
 
         recyclerViewGame = (RecyclerView) findViewById(R.id.recyclerViewGame);
+        progressLoadMOre = (ProgressBar) findViewById(R.id.progressLoadMOre);
         recyclerViewGame.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         String[] gameTitles = getResources().getStringArray(R.array.gameNames);
         String[] gameIds = getResources().getStringArray(R.array.gameId);
 
-        for (int i = 0; i < gameTitles.length; i++) {
+        /*for (int i = 0; i < gameTitles.length; i++) {
             gameModelList.add(new GameModel(gameTitles[i], "desc", "100", gameIds[i]));
+        }*/
+
+        for(int i = 0;i<30;i++) {
+            gameModelList.add(new GameModel("Siba "+i, "desc "+i, "100"+i, "sp"+i));
         }
         gameRecyclerAdapter = new GameRecyclerAdapter(MainActivity.this, gameModelList, this);
         recyclerViewGame.setAdapter(gameRecyclerAdapter);
+
+        recyclerViewGame.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int childCount = recyclerView.getLayoutManager().getChildCount();
+                int totalCount = recyclerView.getLayoutManager().getItemCount();
+                int visiblePOsition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+                if((childCount+visiblePOsition)>=totalCount){
+
+                    progressLoadMOre.setVisibility(View.VISIBLE);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(int j = 0;j<10;j++) {
+                                gameModelList.add(new GameModel("Siba "+j, "desc "+j, "100"+j, "sp"+j));
+                            }
+                            progressLoadMOre.setVisibility(View.GONE);
+                            gameRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    },3000);
+
+
+                }
+
+            }
+        });
     }
 
     @Override
