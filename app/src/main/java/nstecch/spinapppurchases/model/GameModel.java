@@ -6,32 +6,50 @@ package nstecch.spinapppurchases.model;
 
 public class GameModel {
 
-
-    public String gameTitle;
-    public String gamePrice;
+    public String title;
+    public String desc;
+    public String price;
+    public String type;
     public String gameId;
 
-    public GameModel(String gameTitle, String gamePrice, String gameId) {
-        this.gameTitle = gameTitle;
-        this.gamePrice = gamePrice;
+    public GameModel(String gameTitle,String desc, String gamePrice, String gameId) {
+        this.title = gameTitle;
+        this.price = gamePrice;
         this.gameId = gameId;
+        this.desc = desc;
+    }
+    public String getTitle() {
+        return title;
     }
 
-    public String getGameTitle() {
-        return gameTitle;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setGameTitle(String gameTitle) {
-        this.gameTitle = gameTitle;
+    public String getDesc() {
+        return desc;
     }
 
-    public String getGamePrice() {
-        return gamePrice;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
-    public void setGamePrice(String gamePrice) {
-        this.gamePrice = gamePrice;
+    public String getPrice() {
+        return price;
     }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 
     public String getGameId() {
         return gameId;

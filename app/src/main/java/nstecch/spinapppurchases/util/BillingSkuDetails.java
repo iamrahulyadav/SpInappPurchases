@@ -21,7 +21,7 @@ import org.json.JSONObject;
 /**
  * Represents an in-app product's listing details.
  */
-public class SkuDetails {
+public class BillingSkuDetails {
     String mItemType;
     String mSku;
     String mType;
@@ -30,11 +30,11 @@ public class SkuDetails {
     String mDescription;
     String mJson;
 
-    public SkuDetails(String jsonSkuDetails) throws JSONException {
-        this(IabHelper.ITEM_TYPE_INAPP, jsonSkuDetails);
+    public BillingSkuDetails(String jsonSkuDetails) throws JSONException {
+        this(BillingHelper.ITEM_TYPE_INAPP, jsonSkuDetails);
     }
 
-    public SkuDetails(String itemType, String jsonSkuDetails) throws JSONException {
+    public BillingSkuDetails(String itemType, String jsonSkuDetails) throws JSONException {
         mItemType = itemType;
         mJson = jsonSkuDetails;
         JSONObject o = new JSONObject(mJson);

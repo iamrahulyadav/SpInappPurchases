@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">SP InApp Purchases</string>
 
+    <string name="base_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjXZ0kb6Q/0Q7C5HPrpEqvd8Rr3veDEu7pF0vYDuO/gj/v8SDCwoTszO069svSdgW4idNuHI2+K7uakdwkMvqzChr4VrrF9uZkAy98UEz/fzw/zRxi+tUX+ZSKqmqa1RNe3g4z60LvXIXRVsdwYCy83kYYo5wH2zBDzyHf60R2RJbSmDJYY2teIQhDeCWTHgpIQ+kUU/KUjXMs+M01SWDQxUXo2f7PDU9hSHW6kEhBAx9olimjW2Q6UXSfev3YQ/Zv7Ds9eN7xqwCTwYAJrb0wTD2PmwLj8pRqAEuq3AkWY8OiR2lNqx2SlSimTCdENFlXifaM68HR1Ac+86fxoS6fwIDAQAB</string>
+
 
     <string-array name="gameNames">
         <item>Game 1</item>

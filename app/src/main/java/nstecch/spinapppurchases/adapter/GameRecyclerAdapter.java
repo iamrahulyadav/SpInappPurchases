@@ -48,19 +48,19 @@ public class GameRecyclerAdapter extends RecyclerView.Adapter<GameRecyclerAdapte
     @Override
     public void onBindViewHolder(GameViewHolder holder, final int position) {
         final GameModel gameModel = listGames.get(position);
-        holder.textViewGameTitle.setText(gameModel.gameTitle);
-        holder.textViewGamePrice.setText(gameModel.gamePrice);
+        holder.textViewGameTitle.setText(gameModel.getTitle());
+        holder.textViewGamePrice.setText(gameModel.getPrice());
         holder.imageViewGame.setImageResource(images[position]);
         holder.buttonBuyNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onGameCLicked.onBuyClick(gameModel.gameTitle,gameModel.getGamePrice(),gameModel.getGameId());
+                onGameCLicked.onBuyClick(gameModel.getTitle(),gameModel.getPrice(),gameModel.getGameId());
             }
         });
         holder.buttonSubscribeNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onGameCLicked.onSuscribeClick(gameModel.gameTitle,gameModel.getGamePrice(),gameModel.getGameId());
+                onGameCLicked.onSuscribeClick(gameModel.getTitle(),gameModel.getPrice(),gameModel.getGameId());
             }
         });
     }

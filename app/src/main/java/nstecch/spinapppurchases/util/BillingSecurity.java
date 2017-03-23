@@ -18,9 +18,6 @@ package nstecch.spinapppurchases.util;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -40,7 +37,7 @@ import java.security.spec.X509EncodedKeySpec;
  * make it harder for an attacker to replace the code with stubs that treat all
  * purchases as verified.
  */
-public class Security {
+public class BillingSecurity {
     private static final String TAG = "IABUtil/Security";
 
     private static final String KEY_FACTORY_ALGORITHM = "RSA";
@@ -62,8 +59,8 @@ public class Security {
             return false;
         }
 
-        PublicKey key = Security.generatePublicKey(base64PublicKey);
-        return Security.verify(key, signedData, signature);
+        PublicKey key = BillingSecurity.generatePublicKey(base64PublicKey);
+        return BillingSecurity.verify(key, signedData, signature);
     }
 
     /**
@@ -75,7 +72,7 @@ public class Security {
      */
     public static PublicKey generatePublicKey(String encodedPublicKey) {
         try {
-            byte[] decodedKey = Base64.decode(encodedPublicKey);
+            byte[] decodedKey = BillingBase.decode(encodedPublicKey);
             KeyFactory keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM);
             return keyFactory.generatePublic(new X509EncodedKeySpec(decodedKey));
         } catch (NoSuchAlgorithmException e) {
@@ -104,7 +101,7 @@ public class Security {
             sig = Signature.getInstance(SIGNATURE_ALGORITHM);
             sig.initVerify(publicKey);
             sig.update(signedData.getBytes());
-            if (!sig.verify(Base64.decode(signature))) {
+            if (!sig.verify(BillingBase.decode(signature))) {
                 Log.e(TAG, "Signature verification failed.");
                 return false;
             }

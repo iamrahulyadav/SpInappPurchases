@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,61 +14,72 @@ import java.util.List;
 import nstecch.spinapppurchases.adapter.GameRecyclerAdapter;
 import nstecch.spinapppurchases.controller.OnGameCLicked;
 import nstecch.spinapppurchases.model.GameModel;
-import nstecch.spinapppurchases.util.IabHelper;
-import nstecch.spinapppurchases.util.IabResult;
+import nstecch.spinapppurchases.util.BillingHelper;
+import nstecch.spinapppurchases.util.BillingResult;
 import nstecch.spinapppurchases.util.Inventory;
-import nstecch.spinapppurchases.util.Purchase;
+import nstecch.spinapppurchases.util.PurchaseInfo;
 
-public class MainActivity extends AppCompatActivity implements OnGameCLicked {
+public class MainActivity extends AppCompatActivity implements OnGameCLicked, BillingHelper.QueryInventoryFinishedListener, BillingHelper.OnConsumeFinishedListener, BillingHelper.OnIabPurchaseFinishedListener {
 
     private static final String TAG = "MainActivity";
+
+
+    private final String SKU_GAME1 = "sku_game1";
+    final BillingHelper.QueryInventoryFinishedListener onQueryInventoryFinished = new BillingHelper.QueryInventoryFinishedListener() {
+        public void onQueryInventoryFinished(BillingResult result, Inventory inventory) {
+            Log.d(TAG, "Query inventory finished.");
+            if (result.isFailure()) {
+                Log.d(TAG, "Failed to query inventory: " + result);
+
+                return;
+            } else {
+                Log.d(TAG, "Query inventory was successful.");
+                // does the user have the premium upgrade?
+                PurchaseInfo goldMonthly = inventory.getPurchase(SKU_GAME1);
+            }
+        }
+    };
+    private final String SKU_GAME2 = "sku_game2";
+    private final String SKU_GAME3 = "sku_game3";
+    private final String SKU_GAME4 = "sku_game4";
+    private final String SKU_GAME5 = "sku_game5";
+    private final String SKU_GAME6 = "sku_game6";
+    private final int RC_REQUEST_SKU = 1001;
+    private final int RC_REQUEST_SUBSCRIPTION = 1001;
 
 //    IN APP PURCHASES
 //    http://stackoverflow.com/questions/35127086/android-inapp-purchase-receipt-validation-google-play
 //    http://stackoverflow.com/questions/10792465/how-to-implement-in-app-purchase-in-my-android-application
 //    http://www.techotopia.com/index.php/An_Android_Studio_Google_Play_In-app_Billing_Tutorial
-
     List<GameModel> gameModelList = new ArrayList<>();
     RecyclerView recyclerViewGame;
     GameRecyclerAdapter gameRecyclerAdapter;
 
     // payment gatewaye
-    IabHelper mHelper;
+    BillingHelper mHelper;
 
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
-            = new IabHelper.OnIabPurchaseFinishedListener() {
-        public void onIabPurchaseFinished(IabResult result,
-                                          Purchase purchase)
-        {
+    BillingHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+            = new BillingHelper.OnIabPurchaseFinishedListener() {
+        public void onIabPurchaseFinished(BillingResult result,
+                                          PurchaseInfo purchase) {
             if (result.isFailure()) {
                 // Handle error
                 return;
-            }
-            else if (purchase.getSku().equals(""/*ITEM_SKU*/)) {
+            } else if (purchase.getSku().equals(""/*ITEM_SKU*/)) {
                 /*consumeItem();
                 buyButton.setEnabled(false);*/
             }
 
         }
     };
-
-    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener =
-            new IabHelper.OnConsumeFinishedListener() {
-                public void onConsumeFinished(Purchase purchase,
-                                              IabResult result) {
-
-                    if (result.isSuccess()) {
-                        /*clickButton.setEnabled(true);*/
-                    } else {
-                        // handle error
-                    }
-                }
-            };
+    private String payload = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setUpInAPpPurchases(getResources().getString(R.string.base_key));
 
         recyclerViewGame = (RecyclerView) findViewById(R.id.recyclerViewGame);
         recyclerViewGame.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -75,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements OnGameCLicked {
         String[] gameIds = getResources().getStringArray(R.array.gameId);
 
         for (int i = 0; i < gameTitles.length; i++) {
-            gameModelList.add(new GameModel(gameTitles[i], "100", gameIds[i]));
+            gameModelList.add(new GameModel(gameTitles[i], "desc", "100", gameIds[i]));
         }
         gameRecyclerAdapter = new GameRecyclerAdapter(MainActivity.this, gameModelList, this);
         recyclerViewGame.setAdapter(gameRecyclerAdapter);
@@ -86,74 +98,133 @@ public class MainActivity extends AppCompatActivity implements OnGameCLicked {
         super.onResume();
     }
 
+/*    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mHelper != null) mHelper.dispose();
+        mHelper = null;
+    }*/
+
     @Override
     protected void onPause() {
         super.onPause();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (mHelper != null) mHelper.dispose();
-        mHelper = null;
-    }
-
-    @Override
     public void onDestroy() {
+        if (mHelper != null) {
+            mHelper.dispose();
+            mHelper = null;
+        }
         super.onDestroy();
-        if (mHelper != null) mHelper.dispose();
-        mHelper = null;
     }
 
     @Override
-    public void onBuyClick(String gameName, String price,String gameId) {
-        mHelper.launchPurchaseFlow(this, gameId, 10001,
-                mPurchaseFinishedListener, "mypurchasetoken");
+    public void onBuyClick(String gameName, String price, String gameId) {
+        if (mHelper.isSetupDone()) {
+            mHelper.launchPurchaseFlow(this, gameId, RC_REQUEST_SKU,
+                    mPurchaseFinishedListener, "mypurchasetoken");
+        } else {
+            Toast.makeText(MainActivity.this, "DOing Set up, Please Wait...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
-    public void onSuscribeClick(String gameName, String price,String gameID) {
+    public void onSuscribeClick(String gameName, String price, String gameID) {
+        if (gameID.equalsIgnoreCase("sp104"))
+            mHelper.launchSubscriptionPurchaseFlow(MainActivity.this, gameID, RC_REQUEST_SUBSCRIPTION, this);
+        else
+            mHelper.launchSubscriptionPurchaseFlow(MainActivity.this, gameID, RC_REQUEST_SUBSCRIPTION, this);
 
     }
 
     private void setUpInAPpPurchases(String base64) {
+        mHelper = new BillingHelper(this, base64);
+        mHelper.enableDebugLogging(true, TAG);
+        mHelper.startSetup(new BillingHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(BillingResult result) {
 
-        mHelper = new IabHelper(this, base64);
-
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished(IabResult result) {
+                Log.d(TAG, "Setup finished.");
                 if (!result.isSuccess()) {
-                    Log.d(TAG, "In-app Billing setup failed: " + result);
-                } else {
-                    Log.d(TAG, "In-app Billing is set up OK");
+                    Log.i("inappp", "a:" + result.getMessage());
+                    return;
                 }
+                // Have we been disposed of in the meantime? If so, quit.
+                if (mHelper == null) {
+                    Log.i("inappp", "b");
+                    return;
+                }
+
+                try {
+                    mHelper.queryInventoryAsync(onQueryInventoryFinished);
+                } catch (Exception e) {
+                    Log.i(TAG, "onIabSetupFinished: "+e.getMessage());
+                }
+
             }
         });
     }
+
+    boolean verifyDeveloperPayload(PurchaseInfo p) {
+        String payload = p.getDeveloperPayload();
+        return true;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data)
-    {
+                                    Intent data) {
         if (!mHelper.handleActivityResult(requestCode,
                 resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
     public void consumeItem() {
-        mHelper.queryInventoryAsync(mReceivedInventoryListener);
+        mHelper.queryInventoryAsync(this);
     }
 
-    IabHelper.QueryInventoryFinishedListener mReceivedInventoryListener
-            = new IabHelper.QueryInventoryFinishedListener() {
-        public void onQueryInventoryFinished(IabResult result,
-                                             Inventory inventory) {
-
-            if (result.isFailure()) {
-                // Handle failure
-            } else {
-                mHelper.consumeAsync(inventory.getPurchase(/*ITEM_SKU*/""),
-                        mConsumeFinishedListener);
-            }
+    @Override
+    public void onQueryInventoryFinished(BillingResult result, Inventory inventory) {
+        if (result.isFailure()) {
+            // Handle failure
+        } else {
+            mHelper.consumeAsync(inventory.getPurchase(/*ITEM_SKU*/""),
+                    this);
         }
-    };
+    }
+
+    @Override
+    public void onConsumeFinished(PurchaseInfo purchase, BillingResult result) {
+        if (result.isSuccess()) {
+                        /*clickButton.setEnabled(true);*/
+        } else {
+            // handle error
+        }
+    }
+
+    @Override
+    public void onIabPurchaseFinished(BillingResult result, PurchaseInfo purchase) {
+        if (!result.isFailure()) {
+
+            Log.i(TAG, "onIabPurchaseFinished: " + purchase.getOrderId() + " " + purchase.getDeveloperPayload() + " " + purchase.getSku() + " " + purchase.toString() + " " + purchase.getPurchaseTime());
+
+            if (purchase.getOrderId().equals(purchase.getToken())) {
+                if (purchase.getSku().equals(SKU_GAME5)
+                        && purchase.getDeveloperPayload().equals(payload)) {
+                    //Purchase successfull.
+
+                } else if (purchase.getSku().equals(SKU_GAME6)
+                        && purchase.getDeveloperPayload().equals(payload)) {
+
+
+                }
+            } else {
+                //Purchase is not valid!
+                Toast.makeText(MainActivity.this, "was not successful", Toast.LENGTH_LONG).show();
+            }
+
+        } else {
+            Toast.makeText(MainActivity.this, "cancel payment operation", Toast.LENGTH_LONG).show();
+        }
+    }
 }

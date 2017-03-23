@@ -38,7 +38,7 @@ package nstecch.spinapppurchases.util;
  * <p>Note {@link CharBase64} is a GWT-compatible implementation of this
  * class.
  */
-public class Base64 {
+public class BillingBase {
     /** Specify encoding (value is {@code true}). */
     public final static boolean ENCODE = true;
 
@@ -166,7 +166,7 @@ public class Base64 {
     private final static byte EQUALS_SIGN_ENC = -1;
 
     /** Defeats instantiation. */
-    private Base64() {
+    private BillingBase() {
     }
 
     /* ********  E N C O D I N G   M E T H O D S  ******** */
